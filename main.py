@@ -1,6 +1,7 @@
 @namespace
 class SpriteKind:
     Ataque = SpriteKind.create()
+    Protección = SpriteKind.create()
 """
 
 =====================
@@ -27,11 +28,24 @@ puerta_creada = False
 =====================
 
 """
-"""
 
-SALTO
+def on_down_pressed():
+    global escudo_listo, escudo_activo
+    if escudo_listo:
+        escudo_listo = False
+        escudo_activo = True
+        escudo.set_image(assets.image("""
+            escudo_campodefuerza
+            """))
+        pause(3000)
+        escudo_activo = False
+        escudo.set_image(assets.image("""
+            vacio
+            """))
+        pause(5000)
+        escudo_listo = True
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
-"""
 # =====================
 
 def on_a_pressed():
@@ -42,13 +56,17 @@ def on_a_pressed():
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def on_b_pressed():
-    global espada
-    espada = sprites.create(assets.image("""
-        espadiña
-        """), SpriteKind.Ataque)
-    espada.set_position(programador.x + 10, programador.y)
-    espada.lifespan = 5000
-    espada.set_scale(0.5, ScaleAnchor.MIDDLE)
+    global espada_activa, espada
+    if espada_activa:
+        sprites.destroy(espada)
+        espada_activa = False
+    else:
+        espada = sprites.create(assets.image("""
+            espadiña
+            """), SpriteKind.Ataque)
+        espada.set_position(programador.x + 10, programador.y)
+        espada.set_scale(0.5, ScaleAnchor.MIDDLE)
+        espada_activa = True
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
 # =====================
@@ -73,11 +91,49 @@ def on_on_overlap3(player2, enemy):
     programador.set_position(20, 20)
 sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap3)
 
+"""
+
+SALTO
+
+"""
 espada: Sprite = None
 saltos = 0
 programador: Sprite = None
+escudo_activo = False
+escudo_listo = False
+espada_activa = False
+escudo: Sprite = None
+mySprite = sprites.create(assets.image("""
+    programador
+    """), SpriteKind.player)
+escudo = sprites.create(assets.image("""
+        escudo_campodefuerza
+        """),
+    SpriteKind.Protección)
+escudo.set_image(img("""
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    """))
+escudo.set_flag(SpriteFlag.AUTO_DESTROY, False)
 puede_saltar = False
 tiene_llave = False
+espada_activa = False
+escudo_listo = True
+escudo_activo = False
 scene.set_background_image(img("""
     fffffffcbccffffffffffcfbddddddddddd111111111111111111111111dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbffcddffffffcfcfffff
     fffffffccffffcffffffbfddddddddd11111111111111111111111111111111ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddfccdbffffffffffffff
@@ -377,8 +433,17 @@ def on_on_update():
         saltos = 0
 game.on_update(on_on_update)
 
+def on_on_update2():
+    escudo.x = mySprite.x
+    escudo.y = mySprite.y
+game.on_update(on_on_update2)
+
 def on_update_interval():
-    formación_de_objetos_de_tipo_Ataque: List[Sprite] = []
-    for valor in formación_de_objetos_de_tipo_Ataque:
-        valor.set_position(programador.x + 10, programador.y)
+    if espada_activa:
+        espada.set_position(programador.x + 10, programador.y)
 game.on_update_interval(20, on_update_interval)
+
+def on_forever():
+    escudo.x = mySprite.x
+    escudo.y = mySprite.y
+forever(on_forever)

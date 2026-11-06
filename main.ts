@@ -1,6 +1,10 @@
 namespace SpriteKind {
     export const Ataque = SpriteKind.create()
+    export const Protección = SpriteKind.create()
 }
+/**
+ * SALTO
+ */
 /**
  * =====================
  */
@@ -19,9 +23,18 @@ namespace SpriteKind {
 /**
  * =====================
  */
-/**
- * SALTO
- */
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (escudo_listo) {
+        escudo_listo = false
+        escudo_activo = true
+        escudo.setImage(assets.image`escudo_campodefuerza`)
+        pause(3000)
+        escudo_activo = false
+        escudo.setImage(assets.image`vacio`)
+        pause(5000)
+        escudo_listo = true
+    }
+})
 // =====================
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (saltos < 2) {
@@ -47,6 +60,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (player22, coin) 
     info.changeScoreBy(1)
     coin.setPosition(randint(20, 140), randint(20, 100))
 })
+scene.onOverlapTile(SpriteKind.Enemy, assets.tile`transparency16`, function (sprite, location) {
+	
+})
 sprites.onOverlap(SpriteKind.Ataque, SpriteKind.Enemy, function (sprite, otherSprite) {
     sprites.destroy(otherSprite)
 })
@@ -55,15 +71,19 @@ sprites.onOverlap(SpriteKind.Ataque, SpriteKind.Enemy, function (sprite, otherSp
 // =====================
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (player2, enemy) {
     info.changeLifeBy(-1)
-    programador.setPosition(20, 20)
 })
 let espada: Sprite = null
 let saltos = 0
+let escudo: Sprite = null
 let programador: Sprite = null
+let escudo_activo = false
+let escudo_listo = false
 let espada_activa = false
 let puede_saltar = false
 let tiene_llave = false
 espada_activa = false
+escudo_listo = true
+escudo_activo = false
 let moneda: Sprite;
 scene.setBackgroundImage(img`
     fffffffcbccffffffffffcfbddddddddddd111111111111111111111111dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbffcddffffffcfcfffff
@@ -80,12 +100,12 @@ scene.setBackgroundImage(img`
     fffffffddcfffdddddd11111111111111111111ccccc11111111111111111111111111111111ddddddddddddfac3fddddddfdcfddddddddafdddddddddddddddddddddddddddddddddffffffffffffff
     fffffffdddbffbddd111111111111111111111cccccc111111111111111111111111111111111ddddddddfffac33fdddddfddfcdddddddddadddddddddddddddddddddddddddddddbcfffcffffffffff
     ffffffcbfcccddddd111111111111111111111ccccccc11111111111111111111111111111111111ddddfaaaac33fddddfddfaacdddddddddddddddddddddddddddddddddddddddddccfffffffffffff
-    fffffffffcfddddd1111111111111111111111ccccccc11111111111111111111111111111111111dddfadddc333fdddfddfaaaacddddddddddddddddddddddddddddddddddddddddddcffffffffffff
-    ffffffffdfcdddd1111111d11111d111111111cccccccc11111111111111111111111111111111111ddfaddfaa3cfddfddfaaaaaacddddddddddddddddddddddddddddddddddddddddcfbfffcfffffff
-    ffffffffcfbddd11111111111111111111111ccccccccc1111111111111111111111111111111111d1dfadf1fddfcffddfaaaaaaaacddddddddddddddddddddddddddddddddddddddddbfffdffffffff
-    fffffffcdcdddd11111111111111111111111cccccccccc1111111ccc111111111ccc111111111111ddfadf1fdddfcddfaaaaaaaaaacddddddddddddddddddddddddddddddddddddddddffffffffffff
-    fffffbfffcddd11111111111111111111111ccccccccccc1111111cccc111c1111ccc11111111111111faddfddddccdfaaaaaaaaaaacddddddddddddddddddddddddddddddddddddddbcffffffffffff
-    fccffdcbfbddd11111111111111111111111cccccccccccc111111cccc11ccc111ccc1111111111111dddddddddddffdddddddddddddddddddddddddddddddddddddddddddddddddddbcffffffffffff
+    fffffffffcfddddd1111111111111111111111ccccccc11111111111111111111111111111111111dddfaaaac333fdddfddfaaaacddddddddddddddddddddddddddddddddddddddddddcffffffffffff
+    ffffffffdfcdddd1111111d11111d111111111cccccccc11111111111111111111111111111111111ddfaaaaaa3cfddfddfaaaaaacddddddddddddddddddddddddddddddddddddddddcfbfffcfffffff
+    ffffffffcfbddd11111111111111111111111ccccccccc1111111111111111111111111111111111d1dfaafaaaafcffddfaaaaaaaacddddddddddddddddddddddddddddddddddddddddbfffdffffffff
+    fffffffcdcdddd11111111111111111111111cccccccccc1111111ccc111111111ccc111111111111ddfaaf1faaafcddfaaaaaaaaaacddddddddddddddddddddddddddddddddddddddddffffffffffff
+    fffffbfffcddd11111111111111111111111ccccccccccc1111111cccc111c1111ccc11111111111111faaf1ffaaccdfaaaaaaaaaaacddddddddddddddddddddddddddddddddddddddbcffffffffffff
+    fccffdcbfbddd11111111111111111111111cccccccccccc111111cccc11ccc111ccc1111111111111ddaaaffddddffdddddddddddddddddddddddddddddddddddddddddddddddddddbcffffffffffff
     fffcffcdfbdd11111111111111111111111ccccccccccccccc1111cc1c11ccc11cccc111111111111111ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbcffffffffffff
     ffddfffbbbdd1111111111111111111111cccccccccccccccc1111cc1c11ccc11c11c111111111111111dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddcfccfffffffff
     cfdffffbcdd11111111111111111111111cccccccccccccccc1111ccccccccccccccc1111111111111111ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbfcdfffffffff
@@ -190,8 +210,46 @@ scene.setBackgroundImage(img`
 // =====================
 // MAPA
 // =====================
-tiles.setTilemap(tilemap`platformer2`)
+tiles.setTilemap(tilemap`diseño de las plataformas`)
 programador = sprites.create(assets.image`programador`, SpriteKind.Player)
+let mySprite = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Player)
+escudo = sprites.create(assets.image`escudo_campodefuerza`, SpriteKind.Protección)
+escudo.setImage(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `)
+escudo.setFlag(SpriteFlag.AutoDestroy, false)
 animation.runImageAnimation(
 programador,
 [img`
@@ -266,7 +324,7 @@ programador,
 500,
 true
 )
-programador.setPosition(20, 20)
+programador.setPosition(20, 30)
 controller.moveSprite(programador, 100, 0)
 programador.ay = 350
 // La cámara sigue al jugador
@@ -354,8 +412,16 @@ game.onUpdate(function () {
         saltos = 0
     }
 })
+game.onUpdate(function () {
+    escudo.x = mySprite.x
+    escudo.y = mySprite.y
+})
 game.onUpdateInterval(20, function () {
     if (espada_activa) {
         espada.setPosition(programador.x + 10, programador.y)
     }
+})
+forever(function () {
+    escudo.x = mySprite.x
+    escudo.y = mySprite.y
 })
