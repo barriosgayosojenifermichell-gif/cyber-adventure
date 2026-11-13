@@ -4,7 +4,8 @@
     "description": "Ya tiene un arma de defensa incluido y podes activarlo y desactivarlo con x o dandole clic en la letra B dentro del juego. Y le agregue un escudo-campo de fuerza 360º que redee y cuide a todo el personaje, se activa con botón de flecha apuntado abajo",
     "dependencies": {
         "device": "*",
-        "sprite-fx": "github:kohanmathers/makecodespritefx#v1.3.0"
+        "sprite-fx": "github:kohanmathers/makecodespritefx#v1.3.0",
+        "animation": "*"
     },
     "files": [
         "main.blocks",
